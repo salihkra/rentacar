@@ -102,3 +102,14 @@ export interface Campaign {
   validUntil: string;
   isActive: boolean;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+  avatar?: string;
+  phone?: string;
+  tcNo?: string;
+  address?: string;
+}

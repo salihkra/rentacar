@@ -1,12 +1,30 @@
 import React, { useState } from 'react';
 import { User, Calendar, CreditCard, FileText, Settings, LogOut, Eye, Download } from 'lucide-react';
 import { bookings, customers } from '../data/mockData';
+import { User as UserType } from '../types';
 
-const UserPanel: React.FC = () => {
+interface UserPanelProps {
+  currentUser: UserType;
+}
+
+const UserPanel: React.FC<UserPanelProps> = ({ currentUser }) => {
   const [activeTab, setActiveTab] = useState('bookings');
-  const currentUser = customers[0]; // Mock current user
 
-  const userBookings = bookings.filter(b => b.customerId === currentUser.id);
+  
+  // Find customer data for the current user
+  const customerData = customers.find(c => c.email === currentUser.email) || {
+    id: currentUser.id,
+    name: currentUser.name,
+    email: currentUser.email,
+    phone: currentUser.phone || '',
+    avatar: currentUser.avatar,
+    totalRentals: 0,
+    isRegistered: true,
+    tcNo: currentUser.tcNo || '',
+    address: currentUser.address || ''
+  };
+
+  const userBookings = bookings.filter(b => b.customerId === customerData.id);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -251,7 +269,7 @@ const UserPanel: React.FC = () => {
                 <div>
                   <h3 className="text-xl font-semibold">{currentUser.name}</h3>
                   <p className="text-gray-600">{currentUser.email}</p>
-                  <p className="text-sm text-gray-500">{currentUser.totalRentals} kiralama tamamlandı</p>
+                  <p className="text-sm text-gray-500">{customerData.totalRentals} kiralama tamamlandı</p>
                 </div>
               </div>
               
@@ -283,7 +301,7 @@ const UserPanel: React.FC = () => {
                     </label>
                     <input
                       type="tel"
-                      defaultValue={currentUser.phone}
+                      defaultValue={currentUser.phone || ''}
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -293,7 +311,7 @@ const UserPanel: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      defaultValue={currentUser.tcNo}
+                      defaultValue={currentUser.tcNo || ''}
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -303,7 +321,7 @@ const UserPanel: React.FC = () => {
                     Adres
                   </label>
                   <textarea
-                    defaultValue={currentUser.address}
+                    defaultValue={currentUser.address || ''}
                     rows={3}
                     className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -341,7 +359,7 @@ const UserPanel: React.FC = () => {
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center">
                 <img
-                  src={currentUser.avatar}
+                  src={currentUser.avatar || 'https://randomuser.me/api/portraits/men/1.jpg'}
                   alt={currentUser.name}
                   className="w-12 h-12 rounded-full mr-3"
                 />

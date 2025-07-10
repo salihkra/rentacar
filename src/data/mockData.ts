@@ -1,4 +1,25 @@
-import { Car, Booking, Customer, DashboardStats, Campaign, BookingExtra, InsurancePackage } from '../types';
+import { Car, Booking, Customer, DashboardStats, Campaign, BookingExtra, InsurancePackage, User } from '../types';
+
+export const users: User[] = [
+  {
+    id: 'admin-1',
+    name: 'Admin User',
+    email: 'admin@autorentpro.com',
+    role: 'admin',
+    avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
+    phone: '+90 533 888 1234'
+  },
+  {
+    id: 'user-1',
+    name: 'Mehmet Özkan',
+    email: 'mehmet@example.com',
+    role: 'user',
+    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+    phone: '+90 533 555 6789',
+    tcNo: '12345678903',
+    address: 'Girne, KKTC'
+  }
+];
 
 export const campaigns: Campaign[] = [
   {

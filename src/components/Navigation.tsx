@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Car, Menu, X, User, LayoutDashboard } from 'lucide-react';
+import { User as UserType } from '../types';
 
 interface NavigationProps {
   activeTab: string;
@@ -7,6 +8,8 @@ interface NavigationProps {
   onLoginClick: () => void;
   onDashboardClick: () => void;
   onUserPanelClick: () => void;
+  currentUser: UserType | null;
+  onLogout: () => void;
 }
 
 const Navigation: React.FC<NavigationProps> = ({ 
@@ -14,7 +17,9 @@ const Navigation: React.FC<NavigationProps> = ({
   setActiveTab, 
   onLoginClick, 
   onDashboardClick,
-  onUserPanelClick 
+  onUserPanelClick,
+  currentUser,
+  onLogout
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -64,27 +69,53 @@ const Navigation: React.FC<NavigationProps> = ({
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={onLoginClick}
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
-            >
-              <User className="w-4 h-4 mr-1" />
-              Login
-            </button>
-            <button
-              onClick={onUserPanelClick}
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
-            >
-              <User className="w-4 h-4 mr-1" />
-              Hesabım
-            </button>
-            <button
-              onClick={onDashboardClick}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition-colors flex items-center"
-            >
-              <LayoutDashboard className="w-4 h-4 mr-1" />
-              Dashboard
-            </button>
+            {currentUser ? (
+              <>
+                <div className="flex items-center text-gray-700 px-3 py-2">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                  <span className="text-sm font-medium">{currentUser.name}</span>
+                </div>
+                
+                {currentUser.role === 'user' && (
+                  <button
+                    onClick={onUserPanelClick}
+                    className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
+                  >
+                    <User className="w-4 h-4 mr-1" />
+                    Hesabım
+                  </button>
+                )}
+                
+                {currentUser.role === 'admin' && (
+                  <button
+                    onClick={onDashboardClick}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition-colors flex items-center"
+                  >
+                    <LayoutDashboard className="w-4 h-4 mr-1" />
+                    Dashboard
+                  </button>
+                )}
+                
+                <button
+                  onClick={onLogout}
+                  className="text-red-600 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Çıkış
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={onLoginClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition-colors flex items-center"
+              >
+                <User className="w-4 h-4 mr-1" />
+                Giriş Yap
+              </button>
+            )}
           </div>
           <div className="-mr-2 flex items-center md:hidden">
             <button
@@ -115,27 +146,53 @@ const Navigation: React.FC<NavigationProps> = ({
               </button>
             ))}
             <div className="mt-4 px-4 space-y-3">
-              <button
-                onClick={onLoginClick}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
-              >
-                <User className="w-4 h-4 mr-1" />
-                Login
-              </button>
-              <button
-                onClick={onUserPanelClick}
-                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center mb-3"
-              >
-                <User className="w-4 h-4 mr-1" />
-                Hesabım
-              </button>
-              <button
-                onClick={onDashboardClick}
-                className="w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
-              >
-                <LayoutDashboard className="w-4 h-4 mr-1" />
-                Dashboard
-              </button>
+              {currentUser ? (
+                <>
+                  <div className="flex items-center justify-center text-gray-700 px-3 py-2 bg-gray-100 rounded-md">
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-8 h-8 rounded-full mr-2"
+                    />
+                    <span className="text-sm font-medium">{currentUser.name}</span>
+                  </div>
+                  
+                  {currentUser.role === 'user' && (
+                    <button
+                      onClick={onUserPanelClick}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
+                    >
+                      <User className="w-4 h-4 mr-1" />
+                      Hesabım
+                    </button>
+                  )}
+                  
+                  {currentUser.role === 'admin' && (
+                    <button
+                      onClick={onDashboardClick}
+                      className="w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
+                    >
+                      <LayoutDashboard className="w-4 h-4 mr-1" />
+                      Dashboard
+                    </button>
+                  )}
+                  
+                  <button
+                    onClick={onLogout}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
+                  >
+                    Çıkış
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={onLoginClick}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
+                >
+                  <User className="w-4 h-4 mr-1" />
+                  Giriş Yap
+                </button>
+              )}
             </div>
           </div>
         </div>

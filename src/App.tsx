@@ -11,9 +11,10 @@ import CarDetailModal from './components/CarDetailModal';
 import ReservationModal from './components/ReservationModal';
 import UserPanel from './components/UserPanel';
 import Footer from './components/Footer';
-import { Car, BookingExtra, InsurancePackage, SearchFilters } from './types';
+import { Car, BookingExtra, InsurancePackage, SearchFilters, User } from './types';
 
 function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [filters, setFilters] = useState<SearchFilters | null>(null);
   const [activeTab, setActiveTab] = useState('home');
   const [isSearching, setIsSearching] = useState(false);
@@ -31,15 +32,19 @@ function App() {
   } | null>(null);
 
   const handleDashboardClick = () => {
-    setShowCRM(true);
-    setShowUserPanel(false);
-    setActiveTab('');
+    if (currentUser?.role === 'admin') {
+      setShowCRM(true);
+      setShowUserPanel(false);
+      setActiveTab('');
+    }
   };
 
   const handleUserPanelClick = () => {
-    setShowUserPanel(true);
-    setShowCRM(false);
-    setActiveTab('');
+    if (currentUser?.role === 'user') {
+      setShowUserPanel(true);
+      setShowCRM(false);
+      setActiveTab('');
+    }
   };
 
   const handleTabChange = (tab: string) => {
@@ -91,13 +96,24 @@ function App() {
     setIsSearching(true);
   };
 
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setShowCRM(false);
+    setShowUserPanel(false);
+    setActiveTab('home');
+  };
+
   const renderMainContent = () => {
-    if (showCRM) {
+    if (showCRM && currentUser?.role === 'admin') {
       return <CRMDashboard />;
     }
     
-    if (showUserPanel) {
-      return <UserPanel />;
+    if (showUserPanel && currentUser?.role === 'user') {
+      return <UserPanel currentUser={currentUser} />;
     }
 
     if (isSearching) {
@@ -136,6 +152,8 @@ function App() {
         onLoginClick={() => setShowLoginModal(true)}
         onDashboardClick={handleDashboardClick}
         onUserPanelClick={handleUserPanelClick}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
       
       {renderMainContent()}
@@ -145,6 +163,7 @@ function App() {
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
+        onLogin={handleLogin}
       />
       
       <CarDetailModal
