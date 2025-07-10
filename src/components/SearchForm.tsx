@@ -8,11 +8,20 @@ interface SearchFormProps {
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
+  // Get current date and 3 days from now
+  const today = new Date();
+  const threeDaysLater = new Date();
+  threeDaysLater.setDate(today.getDate() + 3);
+  
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState<SearchFilters>({
     pickupLocation: '',
     returnLocation: '',
-    pickupDate: '',
-    returnDate: '',
+    pickupDate: formatDate(today),
+    returnDate: formatDate(threeDaysLater),
     pickupTime: '10:00',
     returnTime: '10:00',
   });
