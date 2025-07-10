@@ -121,7 +121,7 @@ function App() {
         <main>
           <div className="pt-16">
             <SearchForm onSearch={handleSearch} />
-            <Fleet onCarSelect={handleCarSelect} filters={filters} />
+            <Fleet onCarSelect={handleCarSelect} filters={filters} showAll={true} />
           </div>
         </main>
       );
@@ -131,7 +131,7 @@ function App() {
       <main>
         <Hero onRentNow={() => setIsSearching(true)} onLocationSelect={handleLocationSelect} />
         <SearchForm onSearch={handleSearch} />
-        <Fleet onCarSelect={handleCarSelect} filters={filters} />
+        <Fleet onCarSelect={handleCarSelect} filters={filters} showAll={false} />
         <WhyChooseUs />
         <Testimonials />
       </main>
