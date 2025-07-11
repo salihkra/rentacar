@@ -1,170 +1,186 @@
-import React from 'react';
-import { Car as CarType, Filter } from 'lucide-react';
-import CarCard from './CarCard';
-import { cars } from '../data/mockData';
-import { Car, SearchFilters } from '../types';
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown, useState } from 'lucide-react';
+import DashboardStats from './DashboardStats';
+import BookingsTable from './BookingsTable';
+import CarManagement from './CarManagement';
+import CarManagement from './CarManagement';
+import { dashboardStats, bookings } from '../../data/mockData';
 
-interface FleetProps {
-  onCarSelect: (car: any) => void;
-  filters: SearchFilters | null;
-  showAll?: boolean;
-}
+const CRMDashboard: React.FC = () => {
+  const [activeSection, setActiveSection] = useState('dashboard');
 
-const Fleet: React.FC<FleetProps> = ({ onCarSelect, filters, showAll = false }) => {
-  const [filteredCars, setFilteredCars] = useState<Car[]>(cars);
-  const [localFilters, setLocalFilters] = useState<Partial<SearchFilters>>({});
-  const [showAllCars, setShowAllCars] = useState(showAll);
+  const [activeSection, setActiveSection] = useState('dashboard');
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const isPrice = name === 'minPrice' || name === 'maxPrice';
-    const finalValue = value === '' ? undefined : (isPrice ? Number(value) : value);
-    setLocalFilters(prev => ({ ...prev, [name]: finalValue }));
-  };
+  const navItems = [
+    { section: 'MAIN', items: [
+      { id: 'dashboard', label: 'Dashboard', icon: <BarChart3 className="w-5 h-5" /> },
+      { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
+      { id: 'customers', label: 'Customers', icon: <Users className="w-5 h-5" /> },
+      { id: 'fleet', label: 'Fleet', icon: <Car className="w-5 h-5" /> },
+      { id: 'invoices', label: 'Invoices', icon: <FileText className="w-5 h-5" /> }
+    ]},
+    { section: 'MANAGEMENT', items: [
+      { id: 'locations', label: 'Locations', icon: <MapPin className="w-5 h-5" /> },
+      { id: 'pricing', label: 'Pricing', icon: <Tag className="w-5 h-5" /> },
+      { id: 'reports', label: 'Reports', icon: <TrendingUp className="w-5 h-5" /> }
+    ]},
+    { section: 'ADMIN', items: [
+      { id: 'staff', label: 'Staff', icon: <UserShield className="w-5 h-5" /> },
+      { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> }
+    ]}
+  ];
 
-  const handleClearFilters = () => {
-    setLocalFilters({});
-  };
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'fleet':
+        return <CarManagement />;
+      case 'dashboard':
+      default:
+        return (
+          <>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Dashboard Overview</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                <div className="relative">
+                  <select className="block appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-sm">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>Last Quarter</option>
+                    <option>Last Year</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors inline-flex items-center justify-center">
+                  <Download className="w-4 h-4 mr-1" />
+                  Export
+                </button>
+              </div>
+            </div>
 
-  useEffect(() => {
-    const combinedFilters = { ...filters, ...localFilters };
+            <DashboardStats stats={dashboardStats} />
 
-    const newFilteredCars = cars.filter(car => {
-      return (
-        (!combinedFilters.pickupLocation || car.location === combinedFilters.pickupLocation) &&
-        (!combinedFilters.brand || car.brand === combinedFilters.brand) &&
-        (!combinedFilters.category || car.category === combinedFilters.category) &&
-        (!combinedFilters.transmission || car.transmission === combinedFilters.transmission) &&
-        (!combinedFilters.fuelType || car.fuelType === combinedFilters.fuelType) &&
-        (!combinedFilters.minPrice || car.pricePerDay >= combinedFilters.minPrice) &&
-        (!combinedFilters.maxPrice || car.pricePerDay <= combinedFilters.maxPrice)
-      );
-    });
-    setFilteredCars(newFilteredCars);
-  }, [filters, localFilters]);
+            {/* Charts Placeholder */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Booking Trends</h3>
+                  <div className="flex space-x-2">
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'fleet':
+        return <CarManagement />;
+      case 'dashboard':
+      default:
+        return (
+          <>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Dashboard Overview</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                <div className="relative">
+                  <select className="block appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-sm">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>Last Quarter</option>
+                    <option>Last Year</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors inline-flex items-center justify-center">
+                  <Download className="w-4 h-4 mr-1" />
+                  Export
+                </button>
+              </div>
+            </div>
 
-  const handleBooking = (carId: string) => {
-    const car = cars.find(c => c.id === carId);
-    if (car) {
-      onCarSelect(car);
+            <DashboardStats stats={dashboardStats} />
+
+            {/* Charts Placeholder */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Booking Trends</h3>
+                  <div className="flex space-x-2">
+                    <button className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded">Weekly</button>
+                    <button className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">Monthly</button>
+                    <button className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">Yearly</button>
+                  </div>
+                </div>
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Chart placeholder - Booking trends over time</p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-4">Revenue by Vehicle Type</h3>
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Chart placeholder - Revenue distribution</p>
+                </div>
+              </div>
+            </div>
+
+            <BookingsTable bookings={bookings} />
+          </>
+        );
     }
   };
 
-  // Determine which cars to display
-  const carsToDisplay = showAllCars ? filteredCars : filteredCars.slice(0, 3);
-
   return (
-    <section id="fleet" className="py-16 bg-gray-50">
+    <section className="py-8 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <span className="text-blue-600 font-semibold mb-2 inline-block">ARAÇ FİLOMUZ</span>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Araç Koleksiyonumuzu Keşfedin</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Ekonomik kompakt araçlardan lüks SUV'lara kadar, ihtiyaçlarınıza uygun mükemmel aracı rekabetçi fiyatlarla bulun.
-          </p>
-        </div>
-        
-        {/* Filter Bar */}
-        {showAllCars && (
-          <div className="bg-white rounded-lg shadow-md p-4 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900 flex items-center">
-                <Filter className="w-5 h-5 mr-2" />
-                Filtreler
-              </h3>
-              <button onClick={handleClearFilters} className="text-blue-600 hover:text-blue-800 text-sm">
-                Filtreleri Temizle
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <select name="brand" value={localFilters.brand || ''} onChange={handleFilterChange} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Marka</option>
-                <option value="Toyota">Toyota</option>
-                <option value="Ford">Ford</option>
-                <option value="BMW">BMW</option>
-                <option value="Chevrolet">Chevrolet</option>
-                <option value="Mercedes">Mercedes</option>
-                <option value="Audi">Audi</option>
-                <option value="Volkswagen">Volkswagen</option>
-                <option value="Renault">Renault</option>
-              </select>
-              <select name="category" value={localFilters.category || ''} onChange={handleFilterChange} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Kategori</option>
-                <option value="Economy">Ekonomik</option>
-                <option value="SUV">SUV</option>
-                <option value="Luxury">Lüks</option>
-                <option value="Sports">Spor</option>
-              </select>
-              <select name="transmission" value={localFilters.transmission || ''} onChange={handleFilterChange} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Vites</option>
-                <option value="Automatic">Otomatik</option>
-                <option value="Manual">Manuel</option>
-              </select>
-              <select name="fuelType" value={localFilters.fuelType || ''} onChange={handleFilterChange} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Yakıt Türü</option>
-                <option value="Petrol">Benzin</option>
-                <option value="Diesel">Dizel</option>
-                <option value="Electric">Elektrik</option>
-                <option value="Hybrid">Hibrit</option>
-              </select>
-              <div className="flex space-x-2">
-                <input
-                  type="number"
-                  name="minPrice"
-                  value={localFilters.minPrice || ''}
-                  onChange={handleFilterChange}
-                  placeholder="Min Fiyat"
-                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="number"
-                  name="maxPrice"
-                  value={localFilters.maxPrice || ''}
-                  onChange={handleFilterChange}
-                  placeholder="Max Fiyat"
-                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+        <div className="flex flex-col md:flex-row">
+          {/* Sidebar */}
+          <div className="w-full md:w-64 bg-white rounded-xl shadow-md mb-6 md:mb-0 md:mr-6">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-3">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Admin User</h4>
+                  <p className="text-xs text-gray-500">Administrator</p>
+                </div>
               </div>
             </div>
+            <nav className="p-4">
+              {navItems.map((section) => (
+                <div key={section.section} className="mb-6">
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 px-3">
+                    {section.section}
+                  </h4>
+                  <ul className="space-y-1">
+                    {section.items.map((item) => (
+                      <li key={item.id}>
+                        <button 
+                          onClick={() => setActiveSection(item.id)}
+                          className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
+                          activeSection === item.id
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}>
+                          <span className="mr-3 text-gray-500">{item.icon}</span>
+                          {item.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
           </div>
-        )}
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {carsToDisplay.map((car) => (
-            <CarCard key={car.id} car={car} onBook={handleBooking} />
-          ))}
+
+          {/* Main Content */}
+          <div className="flex-1">
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+              {renderContent()}
+            </div>
+          </div>
         </div>
-        
-        {!showAllCars && filteredCars.length > 3 && (
-          <div className="text-center mt-12">
-            <button 
-              onClick={() => setShowAllCars(true)}
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center"
-            >
-              <CarType className="w-5 h-5 mr-2" />
-              Daha Fazla Araç Görüntüle ({filteredCars.length - 3} araç daha)
-            </button>
-          </div>
-        )}
-        
-        {showAllCars && (
-          <div className="text-center mt-12">
-            <p className="text-gray-600 mb-4">
-              Toplam {filteredCars.length} araç gösteriliyor
-            </p>
-            <button 
-              onClick={() => setShowAllCars(false)}
-              className="border-2 border-gray-400 text-gray-600 hover:bg-gray-50 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center"
-            >
-              <CarType className="w-5 h-5 mr-2" />
-              Daha Az Göster
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );
 };
 
-export default Fleet;
+export default CRMDashboard;
