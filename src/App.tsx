@@ -1,146 +1,237 @@
 import React, { useState } from 'react';
-import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown } from 'lucide-react';
-import DashboardStats from './components/dashboard/DashboardStats';
-import BookingsTable from './components/dashboard/BookingsTable';
-import CarManagement from './components/dashboard/CarManagement';
-import { dashboardStats, bookings } from './data/mockData';
+import Navigation from './components/Navigation';
+import Hero from './components/Hero';
+import SearchForm from './components/SearchForm';
+import CarCard from './components/CarCard';
+import WhyChooseUs from './components/WhyChooseUs';
+import Testimonials from './components/Testimonials';
+import ContactSupport from './components/ContactSupport';
+import Footer from './components/Footer';
+import CarDetailModal from './components/CarDetailModal';
+import ReservationModal from './components/ReservationModal';
+import LoginModal from './components/LoginModal';
+import UserPanel from './components/UserPanel';
+import CRMDashboard from './components/dashboard/CRMDashboard';
+import { cars } from './data/mockData';
+import { Car, SearchFilters, BookingExtra, InsurancePackage, User } from './types';
 
-const CRMDashboard: React.FC = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
+const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [filteredCars, setFilteredCars] = useState<Car[]>(cars);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [showCarDetail, setShowCarDetail] = useState(false);
+  const [showReservation, setShowReservation] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showUserPanel, setShowUserPanel] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [reservationData, setReservationData] = useState<{
+    extras: BookingExtra[];
+    insurance: InsurancePackage;
+    totalDays: number;
+  } | null>(null);
 
-  const navItems = [
-    { section: 'MAIN', items: [
-      { id: 'dashboard', label: 'Dashboard', icon: <BarChart3 className="w-5 h-5" /> },
-      { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
-      { id: 'customers', label: 'Customers', icon: <Users className="w-5 h-5" /> },
-      { id: 'fleet', label: 'Fleet', icon: <Car className="w-5 h-5" /> },
-      { id: 'invoices', label: 'Invoices', icon: <FileText className="w-5 h-5" /> }
-    ]},
-    { section: 'MANAGEMENT', items: [
-      { id: 'locations', label: 'Locations', icon: <MapPin className="w-5 h-5" /> },
-      { id: 'pricing', label: 'Pricing', icon: <Tag className="w-5 h-5" /> },
-      { id: 'reports', label: 'Reports', icon: <TrendingUp className="w-5 h-5" /> }
-    ]},
-    { section: 'ADMIN', items: [
-      { id: 'staff', label: 'Staff', icon: <UserShield className="w-5 h-5" /> },
-      { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> }
-    ]}
-  ];
+  const handleSearch = (filters: SearchFilters) => {
+    let filtered = cars;
 
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'fleet':
-        return <CarManagement />;
-      case 'dashboard':
-      default:
-        return (
-          <>
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Dashboard Overview</h2>
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                <div className="relative">
-                  <select className="block appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-sm">
-                    <option>Last 7 Days</option>
-                    <option>Last 30 Days</option>
-                    <option>Last Quarter</option>
-                    <option>Last Year</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
-                </div>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors inline-flex items-center justify-center">
-                  <Download className="w-4 h-4 mr-1" />
-                  Export
-                </button>
-              </div>
-            </div>
+    if (filters.pickupLocation) {
+      filtered = filtered.filter(car => car.location === filters.pickupLocation);
+    }
 
-            <DashboardStats stats={dashboardStats} />
+    if (filters.category) {
+      filtered = filtered.filter(car => car.category === filters.category);
+    }
 
-            {/* Charts Placeholder */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white border border-gray-200 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Booking Trends</h3>
-                  <div className="flex space-x-2">
-                    <button className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded">Weekly</button>
-                    <button className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">Monthly</button>
-                    <button className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">Yearly</button>
-                  </div>
-                </div>
-                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-500">Chart placeholder - Booking trends over time</p>
-                </div>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">Revenue by Vehicle Type</h3>
-                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-500">Chart placeholder - Revenue distribution</p>
-                </div>
-              </div>
-            </div>
+    if (filters.transmission) {
+      filtered = filtered.filter(car => car.transmission === filters.transmission);
+    }
 
-            <BookingsTable bookings={bookings} />
-          </>
-        );
+    if (filters.fuelType) {
+      filtered = filtered.filter(car => car.fuelType === filters.fuelType);
+    }
+
+    if (filters.minPrice) {
+      filtered = filtered.filter(car => car.pricePerDay >= filters.minPrice!);
+    }
+
+    if (filters.maxPrice) {
+      filtered = filtered.filter(car => car.pricePerDay <= filters.maxPrice!);
+    }
+
+    setFilteredCars(filtered);
+    
+    // Scroll to fleet section
+    const fleetSection = document.getElementById('fleet');
+    if (fleetSection) {
+      fleetSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  return (
-    <section className="py-8 bg-gray-100 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row">
-          {/* Sidebar */}
-          <div className="w-full md:w-64 bg-white rounded-xl shadow-md mb-6 md:mb-0 md:mr-6">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-3">
-                  <User className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">Admin User</h4>
-                  <p className="text-xs text-gray-500">Administrator</p>
-                </div>
-              </div>
-            </div>
-            <nav className="p-4">
-              {navItems.map((section) => (
-                <div key={section.section} className="mb-6">
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 px-3">
-                    {section.section}
-                  </h4>
-                  <ul className="space-y-1">
-                    {section.items.map((item) => (
-                      <li key={item.id}>
-                        <button 
-                          onClick={() => setActiveSection(item.id)}
-                          className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
-                          activeSection === item.id
-                            ? 'bg-blue-50 text-blue-600'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}>
-                          <span className="mr-3 text-gray-500">{item.icon}</span>
-                          {item.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </nav>
-          </div>
+  const handleCarBook = (carId: string) => {
+    const car = cars.find(c => c.id === carId);
+    if (car) {
+      setSelectedCar(car);
+      setShowCarDetail(true);
+    }
+  };
 
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              {renderContent()}
-            </div>
+  const handleReserve = (carId: string, extras: BookingExtra[], insurance: InsurancePackage, totalDays: number) => {
+    const car = cars.find(c => c.id === carId);
+    if (car) {
+      setSelectedCar(car);
+      setReservationData({ extras, insurance, totalDays });
+      setShowCarDetail(false);
+      setShowReservation(true);
+    }
+  };
+
+  const handleReservationConfirm = (bookingData: any) => {
+    console.log('Booking confirmed:', bookingData);
+    alert('Rezervasyonunuz başarıyla oluşturuldu! Rezervasyon numaranız: AR-' + Date.now());
+    setShowReservation(false);
+    setSelectedCar(null);
+    setReservationData(null);
+  };
+
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+    setShowLogin(false);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setShowUserPanel(false);
+    setShowDashboard(false);
+    setActiveTab('home');
+  };
+
+  const handleRentNow = () => {
+    const fleetSection = document.getElementById('fleet');
+    if (fleetSection) {
+      fleetSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleLocationSelect = (location: string) => {
+    handleSearch({ 
+      pickupLocation: location,
+      returnLocation: location,
+      pickupDate: '',
+      returnDate: '',
+      pickupTime: '10:00',
+      returnTime: '10:00'
+    });
+  };
+
+  const handleDashboardClick = () => {
+    setShowDashboard(true);
+    setShowUserPanel(false);
+    setActiveTab('dashboard');
+  };
+
+  const handleUserPanelClick = () => {
+    setShowUserPanel(true);
+    setShowDashboard(false);
+    setActiveTab('user-panel');
+  };
+
+  // Show dashboard if admin user clicked dashboard
+  if (showDashboard && currentUser?.role === 'admin') {
+    return <CRMDashboard />;
+  }
+
+  // Show user panel if user clicked user panel
+  if (showUserPanel && currentUser?.role === 'user') {
+    return <UserPanel currentUser={currentUser} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation 
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onLoginClick={() => setShowLogin(true)}
+        onDashboardClick={handleDashboardClick}
+        onUserPanelClick={handleUserPanelClick}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />
+      
+      <Hero onRentNow={handleRentNow} onLocationSelect={handleLocationSelect} />
+      <SearchForm onSearch={handleSearch} />
+      
+      {/* Fleet Section */}
+      <section id="fleet" className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-blue-600 font-semibold mb-2 inline-block">OUR FLEET</span>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Perfect Car</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              From economy cars to luxury vehicles, we have the perfect car for every occasion and budget.
+            </p>
           </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredCars.map((car) => (
+              <CarCard key={car.id} car={car} onBook={handleCarBook} />
+            ))}
+          </div>
+          
+          {filteredCars.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No cars found matching your criteria.</p>
+              <button 
+                onClick={() => setFilteredCars(cars)}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+              >
+                Show All Cars
+              </button>
+            </div>
+          )}
         </div>
-      </div>
-    </section>
+      </section>
+
+      <WhyChooseUs />
+      <Testimonials />
+      
+      <section id="contact">
+        <ContactSupport />
+      </section>
+      
+      <Footer />
+
+      {/* Modals */}
+      <CarDetailModal
+        car={selectedCar}
+        isOpen={showCarDetail}
+        onClose={() => {
+          setShowCarDetail(false);
+          setSelectedCar(null);
+        }}
+        onReserve={handleReserve}
+      />
+
+      <ReservationModal
+        isOpen={showReservation}
+        onClose={() => {
+          setShowReservation(false);
+          setSelectedCar(null);
+          setReservationData(null);
+        }}
+        car={selectedCar}
+        extras={reservationData?.extras || []}
+        insurance={reservationData?.insurance || { id: '1', name: 'Temel Sigorta', price: 0, coverage: [] }}
+        totalDays={reservationData?.totalDays || 1}
+        onConfirm={handleReservationConfirm}
+      />
+
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onLogin={handleLogin}
+      />
+    </div>
   );
 };
 
-export default CRMDashboard;
+export default App;
