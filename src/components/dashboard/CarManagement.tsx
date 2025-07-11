@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, Eye, X, Save, Upload } from 'lucide-react';
 import { Car } from '../../types';
-import { cars as initialCars } from '../../data/mockData';
+import { supabase } from '../../supabase/supabase';
 
-const CarManagement: React.FC = () => {
-  const [cars, setCars] = useState<Car[]>(initialCars);
+interface CarManagementProps {
+  onCarDataChange: (cars: Car[]) => void;
+}
+
+const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
+  const [cars, setCars] = useState<Car[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -35,6 +39,19 @@ const CarManagement: React.FC = () => {
     location: 'Girne',
     available: true
   });
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      const { data, error } = await supabase.from('cars').select('*');
+      if (error) {
+        console.error('Error fetching cars:', error);
+      } else if (data) {
+        setCars(data);
+      }
+    };
+
+    fetchCars();
+  }, []);
 
   const filteredCars = cars.filter(car => {
     const matchesSearch = car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,32 +101,41 @@ const CarManagement: React.FC = () => {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (carToDelete) {
-      setCars(cars.filter(car => car.id !== carToDelete.id));
+      const { error } = await supabase.from('cars').delete().eq('id', carToDelete.id);
+      if (error) {
+        console.error('Error deleting car:', error);
+      } else {
+        const updatedCars = cars.filter(car => car.id !== carToDelete.id);
+        setCars(updatedCars);
+        onCarDataChange(updatedCars);
+      }
       setShowDeleteConfirm(false);
       setCarToDelete(null);
     }
   };
 
-  const handleSaveCar = () => {
+  const handleSaveCar = async () => {
     if (showAddModal) {
-      // Add new car
-      const newCar: Car = {
-        ...formData as Car,
-        id: Date.now().toString(),
-        images: formData.image ? [formData.image] : []
-      };
-      setCars([...cars, newCar]);
+      const { data, error } = await supabase.from('cars').insert([formData]).select();
+      if (error) {
+        console.error('Error adding car:', error);
+      } else if (data) {
+        const updatedCars = [...cars, data[0]];
+        setCars(updatedCars);
+        onCarDataChange(updatedCars);
+      }
       setShowAddModal(false);
     } else if (showEditModal && selectedCar) {
-      // Edit existing car
-      const updatedCar: Car = {
-        ...formData as Car,
-        id: selectedCar.id,
-        images: formData.image ? [formData.image] : selectedCar.images
-      };
-      setCars(cars.map(car => car.id === selectedCar.id ? updatedCar : car));
+      const { data, error } = await supabase.from('cars').update(formData).eq('id', selectedCar.id).select();
+      if (error) {
+        console.error('Error updating car:', error);
+      } else if (data) {
+        const updatedCars = cars.map(car => car.id === selectedCar.id ? data[0] : car);
+        setCars(updatedCars);
+        onCarDataChange(updatedCars);
+      }
       setShowEditModal(false);
     }
     resetForm();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import SearchForm from './components/SearchForm';
@@ -12,12 +12,14 @@ import ReservationModal from './components/ReservationModal';
 import LoginModal from './components/LoginModal';
 import UserPanel from './components/UserPanel';
 import CRMDashboard from './components/dashboard/CRMDashboard';
-import { cars } from './data/mockData';
+import { supabase } from './supabase/supabase';
 import { Car, SearchFilters, BookingExtra, InsurancePackage, User } from './types';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
-  const [filteredCars, setFilteredCars] = useState<Car[]>(cars);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+  const [visibleCars, setVisibleCars] = useState(3);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [showCarDetail, setShowCarDetail] = useState(false);
   const [showReservation, setShowReservation] = useState(false);
@@ -30,6 +32,20 @@ const App: React.FC = () => {
     insurance: InsurancePackage;
     totalDays: number;
   } | null>(null);
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      const { data, error } = await supabase.from('cars').select('*');
+      if (error) {
+        console.error('Error fetching cars:', error);
+      } else if (data) {
+        setCars(data);
+        setFilteredCars(data);
+      }
+    };
+
+    fetchCars();
+  }, []);
 
   const handleSearch = (filters: SearchFilters) => {
     let filtered = cars;
@@ -59,6 +75,7 @@ const App: React.FC = () => {
     }
 
     setFilteredCars(filtered);
+    setVisibleCars(3);
     
     // Scroll to fleet section
     const fleetSection = document.getElementById('fleet');
@@ -137,7 +154,16 @@ const App: React.FC = () => {
 
   // Show dashboard if admin user clicked dashboard
   if (showDashboard && currentUser?.role === 'admin') {
-    return <CRMDashboard />;
+    return <CRMDashboard
+      onBackToHome={() => {
+        setShowDashboard(false);
+        setActiveTab('home');
+      }}
+      onCarDataChange={(newCars) => {
+        setCars(newCars);
+        setFilteredCars(newCars);
+      }}
+    />;
   }
 
   // Show user panel if user clicked user panel
@@ -172,16 +198,39 @@ const App: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCars.map((car) => (
+            {filteredCars.slice(0, visibleCars).map((car) => (
               <CarCard key={car.id} car={car} onBook={handleCarBook} />
             ))}
           </div>
           
+          <div className="text-center mt-12">
+            {filteredCars.length > visibleCars ? (
+              <button
+                onClick={() => setVisibleCars(filteredCars.length)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-transform transform hover:scale-105"
+              >
+                Show More Cars
+              </button>
+            ) : (
+              visibleCars > 3 && (
+                <button
+                  onClick={() => setVisibleCars(3)}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-transform transform hover:scale-105"
+                >
+                  Show Less Cars
+                </button>
+              )
+            )}
+          </div>
+
           {filteredCars.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">No cars found matching your criteria.</p>
-              <button 
-                onClick={() => setFilteredCars(cars)}
+              <button
+                onClick={() => {
+                  setFilteredCars(cars);
+                  setVisibleCars(3);
+                }}
                 className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
               >
                 Show All Cars

@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown } from 'lucide-react';
+import { User, BarChart3, Calendar, Users, Car as CarIcon, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown } from 'lucide-react';
+import { Car } from '../../types';
 import DashboardStats from './DashboardStats';
 import BookingsTable from './BookingsTable';
 import CarManagement from './CarManagement';
 import { dashboardStats, bookings } from '../../data/mockData';
 
-const CRMDashboard: React.FC = () => {
+interface CRMDashboardProps {
+  onBackToHome: () => void;
+  onCarDataChange: (cars: Car[]) => void;
+}
+
+const CRMDashboard: React.FC<CRMDashboardProps> = ({ onBackToHome, onCarDataChange }) => {
   const [activeSection, setActiveSection] = useState('dashboard');
 
   const navItems = [
@@ -13,7 +19,7 @@ const CRMDashboard: React.FC = () => {
       { id: 'dashboard', label: 'Dashboard', icon: <BarChart3 className="w-5 h-5" /> },
       { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
       { id: 'customers', label: 'Customers', icon: <Users className="w-5 h-5" /> },
-      { id: 'fleet', label: 'Fleet', icon: <Car className="w-5 h-5" /> },
+      { id: 'fleet', label: 'Fleet', icon: <CarIcon className="w-5 h-5" /> },
       { id: 'invoices', label: 'Invoices', icon: <FileText className="w-5 h-5" /> }
     ]},
     { section: 'MANAGEMENT', items: [
@@ -30,7 +36,7 @@ const CRMDashboard: React.FC = () => {
   const renderContent = () => {
     switch (activeSection) {
       case 'fleet':
-        return <CarManagement />;
+        return <CarManagement onCarDataChange={onCarDataChange} />;
       case 'dashboard':
       default:
         return (
@@ -90,6 +96,15 @@ const CRMDashboard: React.FC = () => {
   return (
     <section className="py-8 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <button
+            onClick={onBackToHome}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
+          >
+            Back to Home
+          </button>
+        </div>
         <div className="flex flex-col md:flex-row">
           {/* Sidebar */}
           <div className="w-full md:w-64 bg-white rounded-xl shadow-md mb-6 md:mb-0 md:mr-6">
