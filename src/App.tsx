@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown, Database a } from 'lucide-react';
+import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown, useState } from 'lucide-react';
 import DashboardStats from './DashboardStats';
 import BookingsTable from './BookingsTable';
+import CarManagement from './CarManagement';
 import CarManagement from './CarManagement';
 import { dashboardStats, bookings } from '../../data/mockData';
 
 const CRMDashboard: React.FC = () => {
+  const [activeSection, setActiveSection] = useState('dashboard');
+
   const [activeSection, setActiveSection] = useState('dashboard');
 
   const navItems = [
@@ -27,6 +30,43 @@ const CRMDashboard: React.FC = () => {
     ]}
   ];
 
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'fleet':
+        return <CarManagement />;
+      case 'dashboard':
+      default:
+        return (
+          <>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Dashboard Overview</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                <div className="relative">
+                  <select className="block appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-sm">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>Last Quarter</option>
+                    <option>Last Year</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors inline-flex items-center justify-center">
+                  <Download className="w-4 h-4 mr-1" />
+                  Export
+                </button>
+              </div>
+            </div>
+
+            <DashboardStats stats={dashboardStats} />
+
+            {/* Charts Placeholder */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Booking Trends</h3>
+                  <div className="flex space-x-2">
   const renderContent = () => {
     switch (activeSection) {
       case 'fleet':
