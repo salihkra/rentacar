@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown, Database a } from 'lucide-react';
-import DashboardStats from './DashboardStats';
-import BookingsTable from './BookingsTable';
-import CarManagement from './CarManagement';
-import { dashboardStats, bookings } from '../../data/mockData';
+import { User, BarChart3, Calendar, Users, Car, FileText, MapPin, Tag, TrendingUp, Shield as UserShield, Settings, Download, ChevronDown } from 'lucide-react';
+import DashboardStats from './components/dashboard/DashboardStats';
+import BookingsTable from './components/dashboard/BookingsTable';
+import CarManagement from './components/dashboard/CarManagement';
+import { dashboardStats, bookings } from './data/mockData';
 
 const CRMDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
