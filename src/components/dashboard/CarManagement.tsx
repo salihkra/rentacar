@@ -159,19 +159,19 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
     }
   };
 
-  const handleInputChange = (field: keyof Car, value: any) => {
+  const handleInputChange = React.useCallback((field: keyof Car, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
   const availableFeatures = [
     'Klima', 'Bluetooth', 'GPS', 'Geri Görüş Kamerası', 'ABS', 'Airbag',
     'Deri Döşeme', 'Sunroof', 'Premium Ses Sistemi', 'Navigasyon',
     'Cruise Control', 'Otomatik Park', 'Spor Modu', '4WD', 'Hibrit Motor'
   ];
 
-  const CarForm = () => (
+  const CarForm = React.memo(() => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -182,6 +182,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -192,6 +193,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.brand}
             onChange={(e) => handleInputChange('brand', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -202,6 +204,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.model}
             onChange={(e) => handleInputChange('model', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -214,6 +217,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.year}
             onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -224,6 +228,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.mileage}
             onChange={(e) => handleInputChange('mileage', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -250,6 +255,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.seats}
             onChange={(e) => handleInputChange('seats', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -287,6 +293,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.pricePerDay}
             onChange={(e) => handleInputChange('pricePerDay', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -297,6 +304,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             onChange={(e) => handleInputChange('engineSize', e.target.value)}
             placeholder="2.0L"
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -307,6 +315,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             onChange={(e) => handleInputChange('trunkCapacity', e.target.value)}
             placeholder="500L"
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -317,6 +326,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.kmLimit}
             onChange={(e) => handleInputChange('kmLimit', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -328,6 +338,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             value={formData.mpg}
             onChange={(e) => handleInputChange('mpg', parseFloat(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
           />
         </div>
         <div>
@@ -354,6 +365,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           onChange={(e) => handleInputChange('image', e.target.value)}
           placeholder="https://example.com/car-image.jpg"
           className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          autoComplete="off"
         />
       </div>
 
@@ -395,7 +407,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         </label>
       </div>
     </div>
-  );
+  ));
 
   return (
     <div>
