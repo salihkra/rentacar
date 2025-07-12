@@ -159,6 +159,12 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
     }
   };
 
+  const handleInputChange = (field: keyof Car, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
   const availableFeatures = [
     'Klima', 'Bluetooth', 'GPS', 'Geri Görüş Kamerası', 'ABS', 'Airbag',
     'Deri Döşeme', 'Sunroof', 'Premium Ses Sistemi', 'Navigasyon',
@@ -174,7 +180,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             type="text"
             required
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) => handleInputChange('name', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -184,7 +190,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             type="text"
             required
             value={formData.brand}
-            onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+            onChange={(e) => handleInputChange('brand', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -194,7 +200,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             type="text"
             required
             value={formData.model}
-            onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+            onChange={(e) => handleInputChange('model', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -206,7 +212,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             min="2000"
             max="2025"
             value={formData.year}
-            onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+            onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -216,7 +222,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             type="number"
             min="0"
             value={formData.mileage}
-            onChange={(e) => setFormData({ ...formData, mileage: parseInt(e.target.value) })}
+            onChange={(e) => handleInputChange('mileage', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -225,7 +231,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <select
             required
             value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value as Car['category'] })}
+            onChange={(e) => handleInputChange('category', e.target.value as Car['category'])}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Economy">Ekonomik</option>
@@ -242,7 +248,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             min="2"
             max="8"
             value={formData.seats}
-            onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) })}
+            onChange={(e) => handleInputChange('seats', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -251,7 +257,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <select
             required
             value={formData.transmission}
-            onChange={(e) => setFormData({ ...formData, transmission: e.target.value as Car['transmission'] })}
+            onChange={(e) => handleInputChange('transmission', e.target.value as Car['transmission'])}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Automatic">Otomatik</option>
@@ -263,7 +269,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <select
             required
             value={formData.fuelType}
-            onChange={(e) => setFormData({ ...formData, fuelType: e.target.value as Car['fuelType'] })}
+            onChange={(e) => handleInputChange('fuelType', e.target.value as Car['fuelType'])}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Petrol">Benzin</option>
@@ -279,7 +285,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             required
             min="0"
             value={formData.pricePerDay}
-            onChange={(e) => setFormData({ ...formData, pricePerDay: parseInt(e.target.value) })}
+            onChange={(e) => handleInputChange('pricePerDay', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -288,7 +294,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <input
             type="text"
             value={formData.engineSize}
-            onChange={(e) => setFormData({ ...formData, engineSize: e.target.value })}
+            onChange={(e) => handleInputChange('engineSize', e.target.value)}
             placeholder="2.0L"
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -298,7 +304,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <input
             type="text"
             value={formData.trunkCapacity}
-            onChange={(e) => setFormData({ ...formData, trunkCapacity: e.target.value })}
+            onChange={(e) => handleInputChange('trunkCapacity', e.target.value)}
             placeholder="500L"
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -309,7 +315,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             type="number"
             min="0"
             value={formData.kmLimit}
-            onChange={(e) => setFormData({ ...formData, kmLimit: parseInt(e.target.value) })}
+            onChange={(e) => handleInputChange('kmLimit', parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -320,7 +326,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
             min="0"
             step="0.1"
             value={formData.mpg}
-            onChange={(e) => setFormData({ ...formData, mpg: parseFloat(e.target.value) })}
+            onChange={(e) => handleInputChange('mpg', parseFloat(e.target.value))}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -329,7 +335,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <select
             required
             value={formData.location}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            onChange={(e) => handleInputChange('location', e.target.value)}
             className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Girne">Girne</option>
@@ -345,7 +351,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <input
           type="url"
           value={formData.image}
-          onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+          onChange={(e) => handleInputChange('image', e.target.value)}
           placeholder="https://example.com/car-image.jpg"
           className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -373,7 +379,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <input
             type="checkbox"
             checked={formData.isPopular || false}
-            onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
+            onChange={(e) => handleInputChange('isPopular', e.target.checked)}
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
           />
           <span className="text-sm font-medium">Popüler Araç</span>
@@ -382,7 +388,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
           <input
             type="checkbox"
             checked={formData.available || false}
-            onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
+            onChange={(e) => handleInputChange('available', e.target.checked)}
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
           />
           <span className="text-sm font-medium">Müsait</span>
