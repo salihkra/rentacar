@@ -144,39 +144,43 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
     setSelectedCar(null);
   };
 
-  const handleFeatureToggle = (feature: string) => {
-    const currentFeatures = formData.features || [];
-    if (currentFeatures.includes(feature)) {
-      setFormData({
-        ...formData,
-        features: currentFeatures.filter(f => f !== feature)
-      });
-    } else {
-      setFormData({
-        ...formData,
-        features: [...currentFeatures, feature]
-      });
-    }
-  };
-
   const handleInputChange = React.useCallback((field: keyof Car, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   }, []);
-  const availableFeatures = [
+
+  const handleFeatureToggle = React.useCallback((feature: string) => {
+    setFormData(prev => {
+      const currentFeatures = prev.features || [];
+      if (currentFeatures.includes(feature)) {
+        return {
+          ...prev,
+          features: currentFeatures.filter(f => f !== feature)
+        };
+      } else {
+        return {
+          ...prev,
+          features: [...currentFeatures, feature]
+        };
+      }
+    });
+  }, []);
+
+  const availableFeatures = React.useMemo(() => [
     'Klima', 'Bluetooth', 'GPS', 'Geri Görüş Kamerası', 'ABS', 'Airbag',
     'Deri Döşeme', 'Sunroof', 'Premium Ses Sistemi', 'Navigasyon',
     'Cruise Control', 'Otomatik Park', 'Spor Modu', '4WD', 'Hibrit Motor'
-  ];
+  ], []);
 
-  const CarForm = React.memo(() => (
+  const CarForm = React.useMemo(() => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Araç Adı *</label>
           <input
+            key="name-input"
             type="text"
             required
             value={formData.name}
@@ -188,6 +192,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Marka *</label>
           <input
+            key="brand-input"
             type="text"
             required
             value={formData.brand}
@@ -199,6 +204,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Model *</label>
           <input
+            key="model-input"
             type="text"
             required
             value={formData.model}
@@ -210,6 +216,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Yıl *</label>
           <input
+            key="year-input"
             type="number"
             required
             min="2000"
@@ -223,6 +230,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Kilometre</label>
           <input
+            key="mileage-input"
             type="number"
             min="0"
             value={formData.mileage}
@@ -234,6 +242,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
           <select
+            key="category-select"
             required
             value={formData.category}
             onChange={(e) => handleInputChange('category', e.target.value as Car['category'])}
@@ -248,6 +257,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Koltuk Sayısı *</label>
           <input
+            key="seats-input"
             type="number"
             required
             min="2"
@@ -261,6 +271,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Vites *</label>
           <select
+            key="transmission-select"
             required
             value={formData.transmission}
             onChange={(e) => handleInputChange('transmission', e.target.value as Car['transmission'])}
@@ -273,6 +284,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Yakıt Türü *</label>
           <select
+            key="fuel-select"
             required
             value={formData.fuelType}
             onChange={(e) => handleInputChange('fuelType', e.target.value as Car['fuelType'])}
@@ -287,6 +299,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Günlük Fiyat (₺) *</label>
           <input
+            key="price-input"
             type="number"
             required
             min="0"
@@ -299,6 +312,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Motor Hacmi</label>
           <input
+            key="engine-input"
             type="text"
             value={formData.engineSize}
             onChange={(e) => handleInputChange('engineSize', e.target.value)}
@@ -310,6 +324,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Bagaj Kapasitesi</label>
           <input
+            key="trunk-input"
             type="text"
             value={formData.trunkCapacity}
             onChange={(e) => handleInputChange('trunkCapacity', e.target.value)}
@@ -321,6 +336,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Günlük KM Limiti</label>
           <input
+            key="km-input"
             type="number"
             min="0"
             value={formData.kmLimit}
@@ -332,6 +348,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Yakıt Tüketimi (L/100km)</label>
           <input
+            key="mpg-input"
             type="number"
             min="0"
             step="0.1"
@@ -344,6 +361,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Lokasyon *</label>
           <select
+            key="location-select"
             required
             value={formData.location}
             onChange={(e) => handleInputChange('location', e.target.value)}
@@ -360,6 +378,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Araç Resmi URL</label>
         <input
+          key="image-input"
           type="url"
           value={formData.image}
           onChange={(e) => handleInputChange('image', e.target.value)}
@@ -407,7 +426,7 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
         </label>
       </div>
     </div>
-  ));
+  ), [formData, handleInputChange, handleFeatureToggle, availableFeatures]);
 
   return (
     <div>
