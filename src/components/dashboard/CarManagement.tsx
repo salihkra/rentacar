@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, Eye, X, Save, Upload } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 import { Car } from '../../types';
 import { supabase } from '../../supabase/supabase';
 
@@ -118,7 +119,8 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
 
   const handleSaveCar = async () => {
     if (showAddModal) {
-      const { data, error } = await supabase.from('cars').insert([formData]).select();
+      const carDataWithId = { ...formData, id: uuidv4() };
+      const { data, error } = await supabase.from('cars').insert([carDataWithId]).select();
       if (error) {
         console.error('Error adding car:', error);
       } else if (data) {
