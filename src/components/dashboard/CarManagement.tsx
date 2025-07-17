@@ -3,10 +3,246 @@ import { Plus, Edit, Trash2, Search, Filter, Eye, X, Save, Upload } from 'lucide
 import { v4 as uuidv4 } from 'uuid';
 import { Car } from '../../types';
 import { supabase } from '../../supabase/supabase';
+import { nanoid } from 'nanoid'; // Bu satır eklendi
 
 interface CarManagementProps {
   onCarDataChange: (cars: Car[]) => void;
 }
+
+// CarForm bileşeni CarManagement dışına taşındı
+interface CarFormProps {
+  formData: Partial<Car>;
+  setFormData: React.Dispatch<React.SetStateAction<Partial<Car>>>;
+  handleFeatureToggle: (feature: string) => void;
+  availableFeatures: string[];
+}
+
+const CarForm: React.FC<CarFormProps> = ({ formData, setFormData, handleFeatureToggle, availableFeatures }) => (
+  <div className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Araç Adı *</label>
+        <input
+          type="text"
+          required
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Marka *</label>
+        <input
+          type="text"
+          required
+          value={formData.brand}
+          onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Model *</label>
+        <input
+          type="text"
+          required
+          value={formData.model}
+          onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Yıl *</label>
+        <input
+          type="number"
+          required
+          min="2000"
+          max="2025"
+          value={formData.year}
+          onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || 0 })} // parseInt sonrası NaN kontrolü
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Kilometre</label>
+        <input
+          type="number"
+          min="0"
+          value={formData.mileage}
+          onChange={(e) => setFormData({ ...formData, mileage: parseInt(e.target.value) || 0 })} // parseInt sonrası NaN kontrolü
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
+        <select
+          required
+          value={formData.category}
+          onChange={(e) => setFormData({ ...formData, category: e.target.value as Car['category'] })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="Economy">Ekonomik</option>
+          <option value="SUV">SUV</option>
+          <option value="Luxury">Lüks</option>
+          <option value="Sports">Spor</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Koltuk Sayısı *</label>
+        <input
+          type="number"
+          required
+          min="2"
+          max="8"
+          value={formData.seats}
+          onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) || 0 })} // parseInt sonrası NaN kontrolü
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Vites *</label>
+        <select
+          required
+          value={formData.transmission}
+          onChange={(e) => setFormData({ ...formData, transmission: e.target.value as Car['transmission'] })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="Automatic">Otomatik</option>
+          <option value="Manual">Manuel</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Yakıt Türü *</label>
+        <select
+          required
+          value={formData.fuelType}
+          onChange={(e) => setFormData({ ...formData, fuelType: e.target.value as Car['fuelType'] })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="Petrol">Benzin</option>
+          <option value="Diesel">Dizel</option>
+          <option value="Electric">Elektrik</option>
+          <option value="Hybrid">Hibrit</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Günlük Fiyat (₺) *</label>
+        <input
+          type="number"
+          required
+          min="0"
+          value={formData.pricePerDay}
+          onChange={(e) => setFormData({ ...formData, pricePerDay: parseInt(e.target.value) || 0 })} // parseInt sonrası NaN kontrolü
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Motor Hacmi</label>
+        <input
+          type="text"
+          value={formData.engineSize}
+          onChange={(e) => setFormData({ ...formData, engineSize: e.target.value })}
+          placeholder="2.0L"
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Bagaj Kapasitesi</label>
+        <input
+          type="text"
+          value={formData.trunkCapacity}
+          onChange={(e) => setFormData({ ...formData, trunkCapacity: e.target.value })}
+          placeholder="500L"
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Günlük KM Limiti</label>
+        <input
+          type="number"
+          min="0"
+          value={formData.kmLimit}
+          onChange={(e) => setFormData({ ...formData, kmLimit: parseInt(e.target.value) || 0 })} // parseInt sonrası NaN kontrolü
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Yakıt Tüketimi (L/100km)</label>
+        <input
+          type="number"
+          min="0"
+          step="0.1"
+          value={formData.mpg}
+          onChange={(e) => setFormData({ ...formData, mpg: parseFloat(e.target.value) || 0 })} // parseFloat sonrası NaN kontrolü
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Lokasyon *</label>
+        <select
+          required
+          value={formData.location}
+          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="Girne">Girne</option>
+          <option value="Lefkoşa">Lefkoşa</option>
+          <option value="Gazimağusa">Gazimağusa</option>
+          <option value="İskele">İskele</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Araç Resmi URL</label>
+      <input
+        type="url"
+        value={formData.image}
+        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+        placeholder="https://example.com/car-image.jpg"
+        className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-3">Özellikler</label>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {availableFeatures.map((feature) => (
+          <label key={feature} className="flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.features?.includes(feature) || false}
+              onChange={() => handleFeatureToggle(feature)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
+            />
+            <span className="text-sm">{feature}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <div className="flex items-center space-x-4">
+      <label className="flex items-center">
+        <input
+          type="checkbox"
+          checked={formData.isPopular || false}
+          onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
+        />
+        <span className="text-sm font-medium">Popüler Araç</span>
+      </label>
+      <label className="flex items-center">
+        <input
+          type="checkbox"
+          checked={formData.available || false}
+          onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
+        />
+        <span className="text-sm font-medium">Müsait</span>
+      </label>
+    </div>
+  </div>
+);
+
 
 const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -117,316 +353,76 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
     }
   };
 
-  const handleSaveCar = async () => {
-    if (showAddModal) {
-      const carDataWithId = { ...formData, id: uuidv4() };
-      const { data, error } = await supabase.from('cars').insert([carDataWithId]).select();
-      if (error) {
-        console.error('Error adding car:', error);
-      } else if (data) {
-        const updatedCars = [...cars, data[0]];
-        setCars(updatedCars);
-        onCarDataChange(updatedCars);
-      }
-      setShowAddModal(false);
-    } else if (showEditModal && selectedCar) {
-      const { data, error } = await supabase.from('cars').update(formData).eq('id', selectedCar.id).select();
-      if (error) {
-        console.error('Error updating car:', error);
-      } else if (data) {
-        const updatedCars = cars.map(car => car.id === selectedCar.id ? data[0] : car);
-        setCars(updatedCars);
-        onCarDataChange(updatedCars);
-      }
-      setShowEditModal(false);
+const handleSaveCar = async () => {
+  // formData'yı kopyalayarak başlayın
+  let dataToSave = { ...formData };
+
+  if (showAddModal) {
+    const newCarId = nanoid();
+    // Eğer ana resim URL'si varsa ve images dizisi boşsa, ilk resmi images dizisine ekle
+    if (dataToSave.image && (!dataToSave.images || dataToSave.images.length === 0)) {
+      dataToSave.images = [dataToSave.image];
+    } else if (dataToSave.image && dataToSave.images && !dataToSave.images.includes(dataToSave.image)) {
+      // Eğer ana resim URL'si images dizisinde yoksa, ekle
+      dataToSave.images = [dataToSave.image, ...dataToSave.images];
     }
-    resetForm();
-    setSelectedCar(null);
-  };
+    
+    const { data, error } = await supabase.from('cars').insert([{ ...dataToSave, id: newCarId }]).select(); // newCarId ve güncellenmiş dataToSave kullanıldı
+    if (error) {
+      console.error('Error adding car:', error.message, error.details);
+      alert('Araç eklenirken bir hata oluştu: ' + error.message + ' Detaylar: ' + error.details);
+    } else if (data && data.length > 0) {
+      const updatedCars = [...cars, data[0]];
+      setCars(updatedCars);
+      onCarDataChange(updatedCars);
+      alert('Araç başarıyla eklendi!');
+    } else {
+      console.warn('Araç ekleme başarılı ancak Supabase\'den veri dönmedi.');
+      alert('Araç ekleme başarılı ancak veri alınamadı.');
+    }
+    setShowAddModal(false);
+  } else if (showEditModal && selectedCar) {
+    // Düzenleme modunda da images dizisini güncelleme mantığı eklenebilir, eğer gerekliyse
+    if (dataToSave.image && (!dataToSave.images || dataToSave.images.length === 0)) {
+      dataToSave.images = [dataToSave.image];
+    } else if (dataToSave.image && dataToSave.images && !dataToSave.images.includes(dataToSave.image)) {
+      dataToSave.images = [dataToSave.image, ...dataToSave.images];
+    }
 
-  const handleInputChange = React.useCallback((field: keyof Car, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
-  const handleFeatureToggle = React.useCallback((feature: string) => {
-    setFormData(prev => {
-      const currentFeatures = prev.features || [];
-      if (currentFeatures.includes(feature)) {
-        return {
-          ...prev,
-          features: currentFeatures.filter(f => f !== feature)
-        };
+    const { data, error } = await supabase.from('cars').update(dataToSave).eq('id', selectedCar.id).select(); // dataToSave kullanıldı
+    if (error) {
+      console.error('Error updating car:', error.message, error.details);
+      alert('Araç güncellenirken bir hata oluştu: ' + error.message + ' Detaylar: ' + error.details);
+    } else if (data && data.length > 0) {
+      const updatedCars = cars.map(car => car.id === selectedCar.id ? data[0] : car);
+      setCars(updatedCars);
+      onCarDataChange(updatedCars);
+      alert('Araç başarıyla güncellendi!');
+    } else {
+      console.warn('Araç güncelleme başarılı ancak Supabase\'den veri dönmedi.');
+      alert('Araç güncelleme başarılı ancak veri alınamadı.');
+    }
+    setShowEditModal(false);
+  }
+  resetForm();
+  setSelectedCar(null);
+};
+  const handleFeatureToggle = (feature: string) => {
+    setFormData((prev) => {
+      const features = prev.features || [];
+      if (features.includes(feature)) {
+        return { ...prev, features: features.filter((f) => f !== feature) };
       } else {
-        return {
-          ...prev,
-          features: [...currentFeatures, feature]
-        };
+        return { ...prev, features: [...features, feature] };
       }
     });
-  }, []);
+  };
 
   const availableFeatures = React.useMemo(() => [
     'Klima', 'Bluetooth', 'GPS', 'Geri Görüş Kamerası', 'ABS', 'Airbag',
     'Deri Döşeme', 'Sunroof', 'Premium Ses Sistemi', 'Navigasyon',
     'Cruise Control', 'Otomatik Park', 'Spor Modu', '4WD', 'Hibrit Motor'
   ], []);
-
-  const CarForm = React.useMemo(() => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Araç Adı *</label>
-          <input
-            key="name-input"
-            type="text"
-            required
-            value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Marka *</label>
-          <input
-            key="brand-input"
-            type="text"
-            required
-            value={formData.brand}
-            onChange={(e) => handleInputChange('brand', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Model *</label>
-          <input
-            key="model-input"
-            type="text"
-            required
-            value={formData.model}
-            onChange={(e) => handleInputChange('model', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Yıl *</label>
-          <input
-            key="year-input"
-            type="number"
-            required
-            min="2000"
-            max="2025"
-            value={formData.year}
-            onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Kilometre</label>
-          <input
-            key="mileage-input"
-            type="number"
-            min="0"
-            value={formData.mileage}
-            onChange={(e) => handleInputChange('mileage', parseInt(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
-          <select
-            key="category-select"
-            required
-            value={formData.category}
-            onChange={(e) => handleInputChange('category', e.target.value as Car['category'])}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Economy">Ekonomik</option>
-            <option value="SUV">SUV</option>
-            <option value="Luxury">Lüks</option>
-            <option value="Sports">Spor</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Koltuk Sayısı *</label>
-          <input
-            key="seats-input"
-            type="number"
-            required
-            min="2"
-            max="8"
-            value={formData.seats}
-            onChange={(e) => handleInputChange('seats', parseInt(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Vites *</label>
-          <select
-            key="transmission-select"
-            required
-            value={formData.transmission}
-            onChange={(e) => handleInputChange('transmission', e.target.value as Car['transmission'])}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Automatic">Otomatik</option>
-            <option value="Manual">Manuel</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Yakıt Türü *</label>
-          <select
-            key="fuel-select"
-            required
-            value={formData.fuelType}
-            onChange={(e) => handleInputChange('fuelType', e.target.value as Car['fuelType'])}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Petrol">Benzin</option>
-            <option value="Diesel">Dizel</option>
-            <option value="Electric">Elektrik</option>
-            <option value="Hybrid">Hibrit</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Günlük Fiyat (₺) *</label>
-          <input
-            key="price-input"
-            type="number"
-            required
-            min="0"
-            value={formData.pricePerDay}
-            onChange={(e) => handleInputChange('pricePerDay', parseInt(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Motor Hacmi</label>
-          <input
-            key="engine-input"
-            type="text"
-            value={formData.engineSize}
-            onChange={(e) => handleInputChange('engineSize', e.target.value)}
-            placeholder="2.0L"
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Bagaj Kapasitesi</label>
-          <input
-            key="trunk-input"
-            type="text"
-            value={formData.trunkCapacity}
-            onChange={(e) => handleInputChange('trunkCapacity', e.target.value)}
-            placeholder="500L"
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Günlük KM Limiti</label>
-          <input
-            key="km-input"
-            type="number"
-            min="0"
-            value={formData.kmLimit}
-            onChange={(e) => handleInputChange('kmLimit', parseInt(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Yakıt Tüketimi (L/100km)</label>
-          <input
-            key="mpg-input"
-            type="number"
-            min="0"
-            step="0.1"
-            value={formData.mpg}
-            onChange={(e) => handleInputChange('mpg', parseFloat(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoComplete="off"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Lokasyon *</label>
-          <select
-            key="location-select"
-            required
-            value={formData.location}
-            onChange={(e) => handleInputChange('location', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Girne">Girne</option>
-            <option value="Lefkoşa">Lefkoşa</option>
-            <option value="Gazimağusa">Gazimağusa</option>
-            <option value="İskele">İskele</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Araç Resmi URL</label>
-        <input
-          key="image-input"
-          type="url"
-          value={formData.image}
-          onChange={(e) => handleInputChange('image', e.target.value)}
-          placeholder="https://example.com/car-image.jpg"
-          className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          autoComplete="off"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">Özellikler</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {availableFeatures.map((feature) => (
-            <label key={feature} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.features?.includes(feature) || false}
-                onChange={() => handleFeatureToggle(feature)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
-              />
-              <span className="text-sm">{feature}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-4">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={formData.isPopular || false}
-            onChange={(e) => handleInputChange('isPopular', e.target.checked)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
-          />
-          <span className="text-sm font-medium">Popüler Araç</span>
-        </label>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={formData.available || false}
-            onChange={(e) => handleInputChange('available', e.target.checked)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2"
-          />
-          <span className="text-sm font-medium">Müsait</span>
-        </label>
-      </div>
-    </div>
-  ), [formData, handleInputChange, handleFeatureToggle, availableFeatures]);
 
   return (
     <div>
@@ -592,7 +588,13 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
                 </div>
               </div>
               <div className="bg-white px-6 py-6 max-h-[70vh] overflow-y-auto">
-                <CarForm />
+                {/* CarForm'u bu şekilde çağırın */}
+                <CarForm
+                  formData={formData}
+                  setFormData={setFormData}
+                  handleFeatureToggle={handleFeatureToggle}
+                  availableFeatures={availableFeatures}
+                />
               </div>
               <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
                 <button
