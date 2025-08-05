@@ -102,12 +102,32 @@ const App: React.FC = () => {
     }
   };
 
-  const handleReservationConfirm = (bookingData: any) => {
-    console.log('Booking confirmed:', bookingData);
-    alert('Rezervasyonunuz başarıyla oluşturuldu! Rezervasyon numaranız: AR-' + Date.now());
-    setShowReservation(false);
-    setSelectedCar(null);
-    setReservationData(null);
+  const handleReservationConfirm = async (bookingData: any) => {
+    try {
+      console.log('Booking confirmed:', bookingData);
+      
+      // Check if customer validation is required and passed
+      if (bookingData.customer) {
+        // Customer exists in the system - proceed with booking
+        console.log('Customer found:', bookingData.customer);
+        alert(`Rezervasyonunuz başarıyla oluşturuldu!\nMüşteri: ${bookingData.customer.fullName}\nRezervasyon numaranız: AR-${Date.now()}`);
+      } else if (bookingData.isGuest) {
+        // Guest booking - this is allowed but customer should be created
+        console.log('Guest booking:', bookingData.customerInfo);
+        alert(`Rezervasyonunuz başarıyla oluşturuldu!\nMisafir kullanıcı olarak kaydedildi.\nRezervasyon numaranız: AR-${Date.now()}`);
+      } else {
+        // This shouldn't happen with the new validation system
+        alert('Rezervasyon oluşturulamadı. Lütfen müşteri bilgilerini kontrol ediniz.');
+        return;
+      }
+      
+      setShowReservation(false);
+      setSelectedCar(null);
+      setReservationData(null);
+    } catch (error) {
+      console.error('Error confirming booking:', error);
+      alert('Rezervasyon oluşturulurken bir hata oluştu. Lütfen tekrar deneyiniz.');
+    }
   };
 
   const handleLogin = (user: User) => {

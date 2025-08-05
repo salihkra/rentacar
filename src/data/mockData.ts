@@ -1,4 +1,4 @@
-import { Car, Booking, Customer, DashboardStats, Campaign, BookingExtra, InsurancePackage, User } from '../types';
+import { Car, Booking, Customer, DashboardStats, Campaign, BookingExtra, InsurancePackage, User, Location } from '../types';
 
 export const users: User[] = [
   {
@@ -603,25 +603,99 @@ export const bookings: Booking[] = [
 export const customers: Customer[] = [
   {
     id: '1',
-    name: 'Ahmet Yılmaz',
-    email: 'ahmet@example.com',
-    phone: '+90 533 123 4567',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    totalRentals: 3,
-    isRegistered: true,
-    tcNo: '12345678901',
-    address: 'Girne, KKTC'
+    fullName: 'Ahmet Yılmaz',
+    email: 'ahmet.yilmaz@email.com',
+    phone: '+90 532 123 4567',
+    dateOfBirth: '1985-03-15',
+    nationalId: '12345678901',
+    driverLicenseNumber: 'A123456789',
+    driverLicenseExpiry: '2025-12-31',
+    address: 'Atatürk Caddesi No: 45, Girne, KKTC',
+    notes: 'Preferred luxury vehicles',
+    status: 'Active',
+    registrationDate: '2023-01-15',
+    numberOfBookings: 8,
+    lastBookingDate: '2024-07-20'
   },
   {
     id: '2',
-    name: 'Ayşe Demir',
-    email: 'ayse@example.com',
-    phone: '+90 533 234 5678',
-    avatar: 'https://randomuser.me/api/portraits/women/43.jpg',
-    totalRentals: 5,
-    isRegistered: true,
-    tcNo: '12345678902',
-    address: 'Lefkoşa, KKTC'
+    fullName: 'Fatma Demir',
+    email: 'fatma.demir@email.com',
+    phone: '+90 533 987 6543',
+    dateOfBirth: '1990-07-22',
+    nationalId: '98765432109',
+    driverLicenseNumber: 'B987654321',
+    driverLicenseExpiry: '2026-06-15',
+    address: 'Cumhuriyet Meydanı No: 12, Lefkoşa, KKTC',
+    notes: 'Frequent business traveler',
+    status: 'Active',
+    registrationDate: '2023-03-10',
+    numberOfBookings: 12,
+    lastBookingDate: '2024-08-01'
+  },
+  {
+    id: '3',
+    fullName: 'Mehmet Kaya',
+    email: 'mehmet.kaya@email.com',
+    phone: '+90 534 555 1234',
+    dateOfBirth: '1988-11-08',
+    nationalId: '55566677788',
+    driverLicenseNumber: 'C555666777',
+    driverLicenseExpiry: '2024-09-30',
+    address: 'Sahil Caddesi No: 78, Gazimağusa, KKTC',
+    notes: 'Prefers automatic transmission',
+    status: 'Active',
+    registrationDate: '2023-05-20',
+    numberOfBookings: 5,
+    lastBookingDate: '2024-06-15'
+  },
+  {
+    id: '4',
+    fullName: 'Ayşe Özkan',
+    email: 'ayse.ozkan@email.com',
+    phone: '+90 535 777 8888',
+    dateOfBirth: '1992-04-12',
+    nationalId: '11122233344',
+    driverLicenseNumber: 'D111222333',
+    driverLicenseExpiry: '2025-03-20',
+    address: 'Ana Caddesi No: 23, İskele, KKTC',
+    notes: 'Student discount eligible',
+    status: 'Inactive',
+    registrationDate: '2023-02-28',
+    numberOfBookings: 3,
+    lastBookingDate: '2024-01-10'
+  },
+  {
+    id: '5',
+    fullName: 'Ali Çelik',
+    email: 'ali.celik@email.com',
+    phone: '+90 536 999 0000',
+    dateOfBirth: '1983-09-25',
+    nationalId: '99988877766',
+    driverLicenseNumber: 'E999888777',
+    driverLicenseExpiry: '2026-01-15',
+    address: 'Üniversite Kampüsü, Güzelyurt, KKTC',
+    notes: 'VIP customer, premium service',
+    status: 'Active',
+    registrationDate: '2023-04-05',
+    numberOfBookings: 15,
+    lastBookingDate: '2024-08-05'
+  },
+  {
+    id: '6',
+    fullName: 'Zeynep Arslan',
+    email: 'zeynep.arslan@email.com',
+    phone: '+90 537 444 5555',
+    dateOfBirth: '1995-12-03',
+    nationalId: '44455566677',
+    driverLicenseNumber: 'F444555666',
+    driverLicenseExpiry: '2024-11-30',
+    address: 'Deniz Caddesi No: 67, Girne, KKTC',
+    notes: 'New driver, requires assistance',
+    status: 'Active',
+    registrationDate: '2024-01-10',
+    numberOfBookings: 2,
+    lastBookingDate: '2024-07-25'
   }
 ];
 
@@ -635,7 +709,7 @@ export const dashboardStats: DashboardStats = {
   customersTrend: -2.1
 };
 
-export const locations = [
+export const locationNames = [
   'Girne',
   'Lefkoşa',
   'Gazimağusa',
@@ -674,5 +748,92 @@ export const faqData = [
   {
     question: 'Hasar durumunda ne yapmalıyım?',
     answer: 'Derhal firmamızı arayın ve kaza tutanağı düzenleyin. Sigorta kapsamındaki hasarlar için muafiyet tutarı uygulanır.'
+  }
+];
+
+export const locations: Location[] = [
+  {
+    id: '1',
+    name: 'Girne Merkez Şube',
+    address: 'Atatürk Caddesi No: 45, Girne',
+    city: 'Girne',
+    phone: '+90 392 815 1234',
+    workingHours: '08:00 - 20:00',
+    status: 'Active',
+    email: 'girne@autorentpro.com',
+    manager: 'Ahmet Yılmaz',
+    capacity: 25,
+    createdAt: '2024-01-15',
+    updatedAt: '2024-07-01'
+  },
+  {
+    id: '2',
+    name: 'Lefkoşa Havalimanı',
+    address: 'Ercan Havalimanı Terminal Binası, Lefkoşa',
+    city: 'Lefkoşa',
+    phone: '+90 392 600 5678',
+    workingHours: '06:00 - 23:00',
+    status: 'Active',
+    email: 'airport@autorentpro.com',
+    manager: 'Fatma Demir',
+    capacity: 40,
+    createdAt: '2024-02-10',
+    updatedAt: '2024-06-15'
+  },
+  {
+    id: '3',
+    name: 'Gazimağusa Sahil',
+    address: 'Sahil Caddesi No: 78, Gazimağusa',
+    city: 'Gazimağusa',
+    phone: '+90 392 366 9012',
+    workingHours: '09:00 - 19:00',
+    status: 'Active',
+    email: 'magusa@autorentpro.com',
+    manager: 'Mehmet Özkan',
+    capacity: 20,
+    createdAt: '2024-03-05',
+    updatedAt: '2024-07-10'
+  },
+  {
+    id: '4',
+    name: 'İskele Şube',
+    address: 'Ana Caddesi No: 23, İskele',
+    city: 'İskele',
+    phone: '+90 392 371 3456',
+    workingHours: '08:30 - 18:30',
+    status: 'Inactive',
+    email: 'iskele@autorentpro.com',
+    manager: 'Ayşe Kaya',
+    capacity: 15,
+    createdAt: '2024-04-12',
+    updatedAt: '2024-06-20'
+  },
+  {
+    id: '5',
+    name: 'Güzelyurt Merkez',
+    address: 'Cumhuriyet Meydanı No: 12, Güzelyurt',
+    city: 'Güzelyurt',
+    phone: '+90 392 714 7890',
+    workingHours: '08:00 - 19:00',
+    status: 'Active',
+    email: 'guzelyurt@autorentpro.com',
+    manager: 'Hasan Yıldız',
+    capacity: 18,
+    createdAt: '2024-05-20',
+    updatedAt: '2024-07-05'
+  },
+  {
+    id: '6',
+    name: 'Girne Üniversitesi',
+    address: 'Üniversite Kampüsü, Girne',
+    city: 'Girne',
+    phone: '+90 392 650 2345',
+    workingHours: '07:00 - 22:00',
+    status: 'Active',
+    email: 'university@autorentpro.com',
+    manager: 'Zeynep Arslan',
+    capacity: 30,
+    createdAt: '2024-06-01',
+    updatedAt: '2024-07-12'
   }
 ];

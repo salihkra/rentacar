@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, Eye, X, Save, Upload } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 import { Car } from '../../types';
-import { supabase } from '../../supabase/supabase';
-import { nanoid } from 'nanoid'; // Bu satır eklendi
+import { carService } from '../../services/carService';
 
 interface CarManagementProps {
   onCarDataChange: (cars: Car[]) => void;
@@ -279,11 +277,11 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
 
   useEffect(() => {
     const fetchCars = async () => {
-      const { data, error } = await supabase.from('cars').select('*');
-      if (error) {
-        console.error('Error fetching cars:', error);
-      } else if (data) {
+      try {
+        const data = await carService.getAllCars();
         setCars(data);
+      } catch (error) {
+        console.error('Error fetching cars:', error);
       }
     };
 
@@ -340,13 +338,13 @@ const CarManagement: React.FC<CarManagementProps> = ({ onCarDataChange }) => {
 
   const confirmDelete = async () => {
     if (carToDelete) {
-      const { error } = await supabase.from('cars').delete().eq('id', carToDelete.id);
-      if (error) {
-        console.error('Error deleting car:', error);
-      } else {
+      try {
+        await carService.deleteCar(carToDelete.id);
         const updatedCars = cars.filter(car => car.id !== carToDelete.id);
         setCars(updatedCars);
         onCarDataChange(updatedCars);
+      } catch (error) {
+        console.error('Error deleting car:', error);
       }
       setShowDeleteConfirm(false);
       setCarToDelete(null);
@@ -357,53 +355,35 @@ const handleSaveCar = async () => {
   // formData'yı kopyalayarak başlayın
   let dataToSave = { ...formData };
 
-  if (showAddModal) {
-    const newCarId = nanoid();
-    // Eğer ana resim URL'si varsa ve images dizisi boşsa, ilk resmi images dizisine ekle
-    if (dataToSave.image && (!dataToSave.images || dataToSave.images.length === 0)) {
-      dataToSave.images = [dataToSave.image];
-    } else if (dataToSave.image && dataToSave.images && !dataToSave.images.includes(dataToSave.image)) {
-      // Eğer ana resim URL'si images dizisinde yoksa, ekle
-      dataToSave.images = [dataToSave.image, ...dataToSave.images];
-    }
-    
-    const { data, error } = await supabase.from('cars').insert([{ ...dataToSave, id: newCarId }]).select(); // newCarId ve güncellenmiş dataToSave kullanıldı
-    if (error) {
-      console.error('Error adding car:', error.message, error.details);
-      alert('Araç eklenirken bir hata oluştu: ' + error.message + ' Detaylar: ' + error.details);
-    } else if (data && data.length > 0) {
-      const updatedCars = [...cars, data[0]];
+  // Eğer ana resim URL'si varsa ve images dizisi boşsa, ilk resmi images dizisine ekle
+  if (dataToSave.image && (!dataToSave.images || dataToSave.images.length === 0)) {
+    dataToSave.images = [dataToSave.image];
+  } else if (dataToSave.image && dataToSave.images && !dataToSave.images.includes(dataToSave.image)) {
+    // Eğer ana resim URL'si images dizisinde yoksa, ekle
+    dataToSave.images = [dataToSave.image, ...dataToSave.images];
+  }
+
+  try {
+    if (showAddModal) {
+      const newCar = await carService.createCar(dataToSave as any);
+      const updatedCars = [...cars, newCar];
       setCars(updatedCars);
       onCarDataChange(updatedCars);
       alert('Araç başarıyla eklendi!');
-    } else {
-      console.warn('Araç ekleme başarılı ancak Supabase\'den veri dönmedi.');
-      alert('Araç ekleme başarılı ancak veri alınamadı.');
-    }
-    setShowAddModal(false);
-  } else if (showEditModal && selectedCar) {
-    // Düzenleme modunda da images dizisini güncelleme mantığı eklenebilir, eğer gerekliyse
-    if (dataToSave.image && (!dataToSave.images || dataToSave.images.length === 0)) {
-      dataToSave.images = [dataToSave.image];
-    } else if (dataToSave.image && dataToSave.images && !dataToSave.images.includes(dataToSave.image)) {
-      dataToSave.images = [dataToSave.image, ...dataToSave.images];
-    }
-
-    const { data, error } = await supabase.from('cars').update(dataToSave).eq('id', selectedCar.id).select(); // dataToSave kullanıldı
-    if (error) {
-      console.error('Error updating car:', error.message, error.details);
-      alert('Araç güncellenirken bir hata oluştu: ' + error.message + ' Detaylar: ' + error.details);
-    } else if (data && data.length > 0) {
-      const updatedCars = cars.map(car => car.id === selectedCar.id ? data[0] : car);
+      setShowAddModal(false);
+    } else if (showEditModal && selectedCar) {
+      const updatedCar = await carService.updateCar(selectedCar.id, dataToSave as any);
+      const updatedCars = cars.map(car => car.id === selectedCar.id ? updatedCar : car);
       setCars(updatedCars);
       onCarDataChange(updatedCars);
       alert('Araç başarıyla güncellendi!');
-    } else {
-      console.warn('Araç güncelleme başarılı ancak Supabase\'den veri dönmedi.');
-      alert('Araç güncelleme başarılı ancak veri alınamadı.');
+      setShowEditModal(false);
     }
-    setShowEditModal(false);
+  } catch (error) {
+    console.error('Error saving car:', error);
+    alert('Araç kaydedilirken bir hata oluştu: ' + (error as Error).message);
   }
+  
   resetForm();
   setSelectedCar(null);
 };

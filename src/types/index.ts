@@ -26,18 +26,20 @@ export interface Booking {
   id: string;
   customerId: string;
   customerName: string;
+  customer?: Customer | null;
   carId: string;
   carName: string;
+  carPlate?: string;
   pickupDate: string;
   returnDate: string;
   pickupTime: string;
   returnTime: string;
   pickupLocation: string;
   returnLocation: string;
-  status: 'Active' | 'Completed' | 'Cancelled' | 'Pending';
+  status: 'Pending' | 'Active' | 'Completed' | 'Cancelled';
   totalAmount: number;
-  extras: BookingExtra[];
-  insurance: InsurancePackage;
+  extras?: Array<{ id: string; name: string; price: number; selected: boolean }>;
+  insurance?: { id: string; name: string; price: number; coverage: string[] };
 }
 
 export interface BookingExtra {
@@ -56,14 +58,19 @@ export interface InsurancePackage {
 
 export interface Customer {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
-  avatar?: string;
-  totalRentals: number;
-  isRegistered: boolean;
-  tcNo?: string;
-  address?: string;
+  dateOfBirth: string;
+  nationalId: string;
+  driverLicenseNumber: string;
+  driverLicenseExpiry: string;
+  address: string;
+  notes?: string;
+  status: 'Active' | 'Inactive';
+  registrationDate: string;
+  numberOfBookings: number;
+  lastBookingDate?: string;
 }
 
 export interface DashboardStats {
@@ -112,4 +119,19 @@ export interface User {
   phone?: string;
   tcNo?: string;
   address?: string;
+}
+
+export interface Location {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  phone: string;
+  workingHours: string;
+  status: 'Active' | 'Inactive';
+  email?: string;
+  manager?: string;
+  capacity?: number;
+  createdAt: string;
+  updatedAt: string;
 }

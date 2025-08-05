@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Search, Clock } from 'lucide-react';
-import { locations } from '../data/mockData';
+import { locationNames } from '../data/mockData';
 import { SearchFilters } from '../types';
 
 interface SearchFormProps {
@@ -61,7 +61,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
                   required
                 >
                   <option value="">Teslim Alma Yeri</option>
-                  {locations.map((location) => (
+                  {locationNames.map((location) => (
                     <option key={location} value={location}>
                       {location}
                     </option>
@@ -78,7 +78,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
                   required
                 >
                   <option value="">Teslim Etme Yeri</option>
-                  {locations.map((location) => (
+                  {locationNames.map((location) => (
                     <option key={location} value={location}>
                       {location}
                     </option>

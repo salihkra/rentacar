@@ -4,6 +4,9 @@ import { Car } from '../../types';
 import DashboardStats from './DashboardStats';
 import BookingsTable from './BookingsTable';
 import CarManagement from './CarManagement';
+import LocationManagement from './LocationManagement';
+import BookingsManagement from './BookingsManagement';
+import CustomerManagement from './CustomerManagement';
 import { dashboardStats, bookings } from '../../data/mockData';
 
 interface CRMDashboardProps {
@@ -22,11 +25,12 @@ const CRMDashboard: React.FC<CRMDashboardProps> = ({ onBackToHome, onCarDataChan
       { id: 'fleet', label: 'Fleet', icon: <CarIcon className="w-5 h-5" /> },
       { id: 'invoices', label: 'Invoices', icon: <FileText className="w-5 h-5" /> }
     ]},
-    { section: 'MANAGEMENT', items: [
-      { id: 'locations', label: 'Locations', icon: <MapPin className="w-5 h-5" /> },
-      { id: 'pricing', label: 'Pricing', icon: <Tag className="w-5 h-5" /> },
-      { id: 'reports', label: 'Reports', icon: <TrendingUp className="w-5 h-5" /> }
-    ]},
+            { section: 'MANAGEMENT', items: [
+          { id: 'bookings', label: 'Bookings', icon: <Calendar className="w-5 h-5" /> },
+          { id: 'locations', label: 'Locations', icon: <MapPin className="w-5 h-5" /> },
+          { id: 'pricing', label: 'Pricing', icon: <Tag className="w-5 h-5" /> },
+          { id: 'reports', label: 'Reports', icon: <TrendingUp className="w-5 h-5" /> }
+        ]},
     { section: 'ADMIN', items: [
       { id: 'staff', label: 'Staff', icon: <UserShield className="w-5 h-5" /> },
       { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> }
@@ -37,6 +41,12 @@ const CRMDashboard: React.FC<CRMDashboardProps> = ({ onBackToHome, onCarDataChan
     switch (activeSection) {
       case 'fleet':
         return <CarManagement onCarDataChange={onCarDataChange} />;
+      case 'locations':
+        return <LocationManagement onBackToHome={onBackToHome} />;
+      case 'bookings':
+        return <BookingsManagement onBackToHome={onBackToHome} />;
+      case 'customers':
+        return <CustomerManagement onBackToHome={onBackToHome} />;
       case 'dashboard':
       default:
         return (
